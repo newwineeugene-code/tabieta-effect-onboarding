@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Onboarding Dashboard · Tabieta Effect</title>
+<style>
+:root{--gold:#E8A87C;--gold-light:#F5C7A3;--black:#0F0A0D;--card:#1B1016;--border:#2B1A22;--white:#FAF0E4;--dim:#B8988F;--serif:Georgia,"Times New Roman",serif;--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--white);font-family:var(--sans);min-height:100vh;padding:24px 16px}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(232,168,124,.08),transparent 70%);pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+.hero{text-align:center;padding:40px 0 30px}
+.emblem{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;background:var(--card);margin-bottom:12px;box-shadow:0 0 22px rgba(232,168,124,.28);overflow:hidden}
+.emblem img{width:44px;height:44px;object-fit:contain}
+.bname{font-family:var(--serif);font-size:11px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.htitle{font-family:var(--serif);font-size:32px;color:var(--gold-light);font-weight:bold;margin-bottom:6px}
+.hsub{color:var(--dim);font-size:14px;margin-bottom:16px}
+.live{display:inline-flex;align-items:center;gap:8px;background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:20px;padding:6px 14px;color:#4ade80;font-size:12px;font-weight:600;margin-bottom:20px}
+.live::before{content:"";width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pls 2s infinite}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+.csvbtn{background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:12px;padding:12px 28px;color:var(--black);font-family:var(--serif);font-weight:bold;cursor:pointer;font-size:13px;letter-spacing:.1em;box-shadow:0 4px 20px rgba(232,168,124,.3)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(232,168,124,.14),transparent 70%);pointer-events:none}
+.slabel{font-size:10px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;margin-bottom:8px}
+.sval{font-family:var(--serif);font-size:36px;color:var(--gold-light);font-weight:bold;margin-bottom:4px}
+.sdesc{font-size:12px;color:var(--dim)}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+.phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.ptitle{font-family:var(--serif);font-size:20px;color:var(--gold-light);font-weight:bold}
+.pcount{font-size:12px;color:var(--dim)}
+.bar-row{display:grid;grid-template-columns:90px 1fr 90px;gap:14px;align-items:center;padding:8px 0}
+.blabel{font-size:13px;color:var(--white)}
+.bar-bg{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px;transition:width .5s}
+.bar-meta{font-size:12px;color:var(--dim);text-align:right}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th{text-align:left;padding:12px 10px;font-size:10px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:14px 10px;font-size:13px;color:var(--white);border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tr:hover td{background:rgba(232,168,124,.03)}
+.lang-pill{display:inline-flex;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;text-transform:uppercase}
+.lang-pill.en{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#60a5fa}
+.lang-pill.jm{background:rgba(0,155,58,.12);border:1px solid rgba(254,209,0,.4);color:#FED100}
+.status{display:inline-flex;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.status.completed{background:rgba(39,174,96,.15);color:#4ade80;border:1px solid rgba(39,174,96,.3)}
+.status.in_progress{background:rgba(232,168,124,.15);color:var(--gold);border:1px solid rgba(232,168,124,.3)}
+.actions{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle}
+.actions a{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:rgba(232,168,124,.1);border:1px solid rgba(232,168,124,.3);color:var(--gold);text-decoration:none;font-size:12px}
+.actions a.wa{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#4ade80}
+.del{width:26px;height:26px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;border-radius:6px;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center}
+.del:hover{background:rgba(239,68,68,.2)}
+.search{width:280px;max-width:100%;background:var(--black);border:1px solid var(--border);border-radius:10px;padding:9px 14px;color:var(--white);font-size:13px;outline:none}
+.search:focus{border-color:var(--gold)}
+.empty{text-align:center;padding:40px 20px;color:var(--dim);font-size:14px}
+@media (max-width:700px){.htitle{font-size:26px}.sval{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div class="emblem"><img src="https://assets.cdn.filesafe.space/ke071spolXaxJw82PA7t/media/69d7c9a793f130b200fb3a68.png" alt="Tabieta Effect"/></div>
+  <div class="bname">Tabieta Effect</div>
+  <h1 class="htitle">Onboarding Dashboard</h1>
+  <p class="hsub">Track leads, completions, and language preferences</p>
+  <div class="live">LIVE</div><br>
+  <button class="csvbtn" onclick="exportCSV()">Export CSV</button>
+</div>
+<div class="stats">
+  <div class="stat"><div class="slabel">Total Leads</div><div class="sval" id="sTotal">0</div><div class="sdesc" id="sTotalD">—</div></div>
+  <div class="stat"><div class="slabel">Completions</div><div class="sval" id="sComp">0</div><div class="sdesc" id="sCompD">—</div></div>
+  <div class="stat"><div class="slabel">Completion Rate</div><div class="sval" id="sRate">0%</div><div class="sdesc" id="sRateD">0% of total leads</div></div>
+  <div class="stat"><div class="slabel">Avg. Progress</div><div class="sval" id="sAvg">0.0/8</div><div class="sdesc">steps completed</div></div>
+</div>
+<div class="panel"><div class="phead"><div class="ptitle">Language Preferences</div><div class="pcount" id="langCount">0 leads</div></div><div id="langBars"></div></div>
+<div class="panel"><div class="phead"><div class="ptitle">Step-by-Step Completion</div><div class="pcount" id="stepCount">0 leads tracked</div></div><div id="stepBars"></div></div>
+<div class="panel"><div class="phead"><div class="ptitle">Leads</div><input type="text" class="search" id="search" placeholder="Search by name or email..." oninput="render()"></div><div class="twrap"><table><thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Phone</th><th>Language</th><th>Progress</th><th>Status</th><th>Deposit</th><th>Updated</th><th></th></tr></thead><tbody id="leadsBody"></tbody></table></div><div id="emptyState" class="empty" style="display:none">No leads yet.</div></div>
+</div>
+<script>
+function getAll(){try{return JSON.parse(localStorage.getItem('te_leads')||'[]')}catch(e){return[]}}
+function del(id){if(!confirm('Delete this lead?'))return;const l=getAll().filter(x=>x.id!==id);localStorage.setItem('te_leads',JSON.stringify(l));render()}
+function ago(iso){const s=Math.floor((Date.now()-new Date(iso).getTime())/1000);if(s<60)return s+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago'}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function langLabel(c){return c==='EN'?'English':c==='JM'?'Jamaica':c}
+function render(){
+const all=getAll(),q=document.getElementById('search').value.toLowerCase().trim();
+const filt=q?all.filter(l=>(l.name||'').toLowerCase().includes(q)||(l.email||'').toLowerCase().includes(q)):all;
+const total=all.length,comp=all.filter(l=>l.status==='completed').length,rate=total?Math.round((comp/total)*100):0,avg=total?(all.reduce((s,l)=>s+(l.progress_step||0),0)/total).toFixed(1):'0.0';
+document.getElementById('sTotal').textContent=total;
+document.getElementById('sTotalD').textContent=total===1?'1 lead captured':total+' leads captured';
+document.getElementById('sComp').textContent=comp;
+document.getElementById('sCompD').textContent=comp?comp+' completed':'—';
+document.getElementById('sRate').textContent=rate+'%';
+document.getElementById('sRateD').textContent=rate+'% of total leads';
+document.getElementById('sAvg').textContent=avg+'/8';
+const langs={};all.forEach(l=>{const c=(l.language||'en').toUpperCase();langs[c]=(langs[c]||0)+1});
+document.getElementById('langBars').innerHTML=Object.entries(langs).map(([c,n])=>{const p=total?Math.round((n/total)*100):0;return '<div class="bar-row"><div class="blabel">'+langLabel(c)+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+p+'%"></div></div><div class="bar-meta">'+n+' · '+p+'%</div></div>'}).join('')||'<div class="empty">No data yet</div>';
+document.getElementById('langCount').textContent=total+(total===1?' lead':' leads');
+document.getElementById('stepBars').innerHTML=Array.from({length:8},(_,i)=>{const s=i+1,n=all.filter(l=>(l.progress_step||0)>=s).length,p=total?Math.round((n/total)*100):0;return '<div class="bar-row"><div class="blabel">Step '+s+'</div><div class="bar-bg"><div class="bar-fill" style="width:'+p+'%"></div></div><div class="bar-meta">'+n+' · '+p+'%</div></div>'}).join('');
+document.getElementById('stepCount').textContent=total+(total===1?' lead tracked':' leads tracked');
+const emp=document.getElementById('emptyState');
+if(!filt.length){document.getElementById('leadsBody').innerHTML='';emp.style.display='block';emp.textContent=all.length===0?'No leads yet. Complete the onboarding to see data here.':'No leads match your search.';return}
+emp.style.display='none';
+const sorted=[...filt].sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at));
+document.getElementById('leadsBody').innerHTML=sorted.map(l=>{
+const wa=(l.phone||'').replace(/[^\d]/g,'');
+const em=l.email?'<a href="mailto:'+esc(l.email)+'" title="Email">✉️</a>':'';
+const cl=l.phone?'<a href="tel:'+esc(l.phone)+'" title="Call">📞</a>':'';
+const wh=wa?'<a class="wa" href="https://wa.me/'+wa+'" target="_blank" title="WhatsApp">💬</a>':'';
+const lc=(l.language||'en').toLowerCase();
+return '<tr><td>'+(esc(l.name)||'—')+'</td><td>'+(esc(l.username)||'—')+'</td><td>'+(esc(l.email)||'—')+'<span class="actions">'+em+'</span></td><td>'+(esc(l.phone)||'—')+'<span class="actions">'+wh+cl+'</span></td><td><span class="lang-pill '+lc+'">'+esc((l.language||'en').toUpperCase())+'</span></td><td>'+(l.progress_step||0)+'/8</td><td><span class="status '+(l.status||'in_progress')+'">'+(l.status==='completed'?'Completed':'In Progress')+'</span></td><td>'+(l.deposit==='yes'?'✅ Yes':l.deposit==='no'?'⏳ Not yet':'—')+'</td><td>'+ago(l.updated_at)+'</td><td><button class="del" onclick="del(\''+l.id+'\')" title="Delete">✕</button></td></tr>';
+}).join('');
+}
+function exportCSV(){const l=getAll();if(!l.length){alert('No leads to export');return}const h=['Name','Username','Email','Phone','Language','Progress','Status','Deposit','Broker','Created','Updated'];const r=l.map(x=>[x.name,x.username,x.email,x.phone,(x.language||'en').toUpperCase(),(x.progress_step||0)+'/8',x.status,x.deposit,x.broker,x.created_at,x.updated_at].map(v=>'"'+String(v||'').replace(/"/g,'""')+'"').join(','));const csv=[h.join(','),...r].join('\n');const b=new Blob([csv],{type:'text/csv'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='tabieta-leads-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(u)}
+window.addEventListener('storage',render);
+setInterval(render,2000);
+render();
+</script>
+</body>
+</html>
