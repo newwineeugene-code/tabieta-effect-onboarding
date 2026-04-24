@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tabieta Effect — Live Dashboard</title>
+<style>
+  :root{
+    --bg:#1a0f1a;--card:#2a1a2a;--card2:#3a2438;--gold:#e8a87c;--gold2:#d89068;
+    --plum:#6b3a5c;--text:#f5e6d8;--muted:#b89a88;--line:rgba(232,168,124,.2);
+    --good:#7dd3a0;--warn:#f4b860;--bad:#e67a7a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px}
+  .wrap{max-width:1400px;margin:0 auto}
+  .hero{background:linear-gradient(135deg,var(--plum),var(--card));border-radius:20px;padding:28px;margin-bottom:24px;display:flex;align-items:center;gap:20px;border:1px solid var(--line)}
+  .hero img{width:70px;height:70px;border-radius:14px;object-fit:cover;background:var(--card)}
+  .hero h1{font-size:28px;color:var(--gold);margin-bottom:4px}
+  .hero p{color:var(--muted);font-size:14px}
+  .live{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(125,211,160,.15);padding:8px 16px;border-radius:20px;border:1px solid rgba(125,211,160,.3)}
+  .live .dot{width:10px;height:10px;border-radius:50%;background:var(--good);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .stat .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+  .stat .value{font-size:32px;color:var(--gold);font-weight:bold}
+  .stat .sub{color:var(--muted);font-size:12px;margin-top:4px}
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .panel h3{color:var(--gold);font-size:16px;margin-bottom:16px}
+  .lang-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .lang-row .name{width:80px;font-size:13px}
+  .lang-row .bar{flex:1;height:10px;background:var(--card2);border-radius:6px;overflow:hidden}
+  .lang-row .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2))}
+  .lang-row .count{width:50px;text-align:right;color:var(--muted);font-size:13px}
+  .step-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .step-row .name{width:90px;font-size:12px;color:var(--muted)}
+  .step-row .bar{flex:1;height:8px;background:var(--card2);border-radius:5px;overflow:hidden}
+  .step-row .fill{height:100%;background:var(--good)}
+  .step-row .count{width:40px;text-align:right;color:var(--muted);font-size:12px}
+  .table-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .table-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .table-head h3{color:var(--gold);font-size:16px}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;padding:12px 16px;background:var(--card2);color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+  td{padding:12px 16px;border-top:1px solid var(--line);font-size:13px}
+  tr:hover td{background:rgba(232,168,124,.05)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600}
+  .pill-en{background:rgba(100,149,237,.2);color:#9cb9ff;border:1px solid rgba(100,149,237,.3)}
+  .pill-jm{background:rgba(125,211,160,.2);color:var(--good);border:1px solid rgba(125,211,160,.3)}
+  .pill-done{background:rgba(125,211,160,.2);color:var(--good)}
+  .pill-prog{background:rgba(244,184,96,.2);color:var(--warn)}
+  .pill-new{background:rgba(232,168,124,.2);color:var(--gold)}
+  .actions{display:flex;gap:6px}
+  .icon-btn{width:30px;height:30px;border-radius:6px;background:var(--card2);border:1px solid var(--line);color:var(--text);cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+  .icon-btn:hover{background:var(--plum);color:var(--gold)}
+  .empty{padding:60px;text-align:center;color:var(--muted)}
+  .progress-mini{display:flex;align-items:center;gap:8px}
+  .progress-mini .bar{width:60px;height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+  .progress-mini .fill{height:100%;background:var(--gold)}
+  @media (max-width:900px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .panels{grid-template-columns:1fr}
+    .hero{flex-wrap:wrap}
+    .live{margin-left:0}
+    table{font-size:12px}
+    th,td{padding:8px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <img src="https://assets.cdn.filesafe.space/ke071spolXaxJw82PA7t/media/69d7c9a793f130b200fb3a68.png" alt="Tabieta Effect"/>
+    <div>
+      <h1>Tabieta Effect Dashboard</h1>
+      <p>Live lead tracking across all devices</p>
+    </div>
+    <div class="live"><div class="dot"></div><span>LIVE</span></div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="label">Total Leads</div><div class="value" id="s-total">0</div><div class="sub">All time</div></div>
+    <div class="stat"><div class="label">Completions</div><div class="value" id="s-done">0</div><div class="sub">Finished onboarding</div></div>
+    <div class="stat"><div class="label">Completion Rate</div><div class="value" id="s-rate">0%</div><div class="sub">Of all leads</div></div>
+    <div class="stat"><div class="label">Avg Progress</div><div class="value" id="s-avg">0</div><div class="sub">Steps completed</div></div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>Language Preferences</h3>
+      <div id="langs"></div>
+    </div>
+    <div class="panel">
+      <h3>Step-by-Step Completion</h3>
+      <div id="steps"></div>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head"><h3>Leads</h3><span id="count" style="color:var(--muted);font-size:12px">0 leads</span></div>
+    <div id="table-body">
+      <div class="empty">Waiting for first lead...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const FIREBASE_URL = "https://tabieta-effect-default-rtdb.firebaseio.com";
+
+  const STEPS = ['Language','Intake','Broker Q','Broker Pick','Deposit','Register','Copy Code','Social','Final','Done'];
+
+  async function fetchLeads(){
+    try{
+      const r = await fetch(FIREBASE_URL + '/leads.json');
+      const data = await r.json();
+      if(!data) return [];
+      return Object.values(data);
+    }catch(e){
+      const backup = localStorage.getItem('te_leads');
+      return backup ? JSON.parse(backup) : [];
+    }
+  }
+
+  function pillLang(l){
+    if(l === 'jm') return '<span class="pill pill-jm">Jamaica</span>';
+    return '<span class="pill pill-en">English</span>';
+  }
+
+  function pillStatus(s){
+    if(s === 'done') return '<span class="pill pill-done">Completed</span>';
+    if(s === 'progress') return '<span class="pill pill-prog">In Progress</span>';
+    return '<span class="pill pill-new">New</span>';
+  }
+
+  function fmtDate(t){
+    if(!t) return '-';
+    const d = new Date(t); const now = new Date();
+    const diff = (now - d)/1000;
+    if(diff < 60) return Math.floor(diff)+'s ago';
+    if(diff < 3600) return Math.floor(diff/60)+'m ago';
+    if(diff < 86400) return Math.floor(diff/3600)+'h ago';
+    return d.toLocaleDateString();
+  }
+
+  function cleanPhone(p){ if(!p) return ''; return p.replace(/[^0-9]/g,''); }
+
+  async function render(){
+    const leads = await fetchLeads();
+    const total = leads.length;
+    const done = leads.filter(l => l.status === 'done').length;
+    const rate = total ? Math.round(done/total*100) : 0;
+    const avg = total ? (leads.reduce((s,l)=>s+(l.step||0),0)/total).toFixed(1) : 0;
+
+    document.getElementById('s-total').textContent = total;
+    document.getElementById('s-done').textContent = done;
+    document.getElementById('s-rate').textContent = rate + '%';
+    document.getElementById('s-avg').textContent = avg;
+
+    const langCounts = {};
+    leads.forEach(l => { const k = l.lang || 'en'; langCounts[k] = (langCounts[k]||0)+1; });
+    const maxLang = Math.max(...Object.values(langCounts),1);
+    document.getElementById('langs').innerHTML = Object.entries(langCounts).map(([k,v])=>{
+      const name = k==='jm'?'Jamaica':'English';
+      return `<div class="lang-row"><div class="name">${name}</div><div class="bar"><div class="fill" style="width:${v/maxLang*100}%"></div></div><div class="count">${v}</div></div>`;
+    }).join('') || '<div style="color:var(--muted);font-size:13px">No data yet</div>';
+
+    const stepCounts = new Array(STEPS.length).fill(0);
+    leads.forEach(l => { for(let i=0;i<=(l.step||0);i++) stepCounts[i]++; });
+    const maxStep = Math.max(...stepCounts,1);
+    document.getElementById('steps').innerHTML = STEPS.map((s,i)=>{
+      return `<div class="step-row"><div class="name">${s}</div><div class="bar"><div class="fill" style="width:${stepCounts[i]/maxStep*100}%"></div></div><div class="count">${stepCounts[i]}</div></div>`;
+    }).join('');
+
+    document.getElementById('count').textContent = total + ' lead' + (total===1?'':'s');
+
+    if(total === 0){
+      document.getElementById('table-body').innerHTML = '<div class="empty">Waiting for first lead...</div>';
+      return;
+    }
+
+    const rows = leads.sort((a,b)=>(b.updated||0)-(a.updated||0)).map(l => {
+      const pct = Math.round((l.step||0)/(STEPS.length-1)*100);
+      const phone = cleanPhone(l.phone);
+      const actions = `<div class="actions">
+        ${l.email ? `<a class="icon-btn" href="mailto:${l.email}" title="Email">✉</a>` : ''}
+        ${phone ? `<a class="icon-btn" href="https://wa.me/${phone}" target="_blank" title="WhatsApp">💬</a>` : ''}
+        ${phone ? `<a class="icon-btn" href="tel:${phone}" title="Call">📞</a>` : ''}
+      </div>`;
+      return `<tr>
+        <td>${l.name || '-'}</td>
+        <td>${l.username || '-'}</td>
+        <td>${l.email || '-'}</td>
+        <td>${l.phone || '-'}</td>
+        <td>${pillLang(l.lang)}</td>
+        <td><div class="progress-mini"><div class="bar"><div class="fill" style="width:${pct}%"></div></div><span style="font-size:11px;color:var(--muted)">${pct}%</span></div></td>
+        <td>${pillStatus(l.status)}</td>
+        <td>${l.deposit ? '$'+l.deposit : '-'}</td>
+        <td style="color:var(--muted);font-size:12px">${fmtDate(l.updated)}</td>
+        <td>${actions}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('table-body').innerHTML = `<table>
+      <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Phone</th><th>Lang</th><th>Progress</th><th>Status</th><th>Deposit</th><th>Updated</th><th>Actions</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  }
+
+  render();
+  setInterval(render, 3000);
+</script>
+</body>
+</html>
