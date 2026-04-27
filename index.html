@@ -219,17 +219,17 @@ async function cloudSave(l){
 }
 function sendToGHL(d){
   try{
-    fetch(GHL_WEBHOOK,{method:'POST',mode:'no-cors',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      name:d.name||'',
-      email:d.email||'',
-      phone:d.phone||'',
-      status:d.status||'',
-      language:d.lang||'',
-      username:d.username||'',
-      broker:d.broker||'',
-      deposit:d.deposit||'',
-      source:'Tabieta Effect Onboarding'
-    })});
+    const p=new URLSearchParams();
+    p.append('name',d.name||'');
+    p.append('email',d.email||'');
+    p.append('phone',d.phone||'');
+    p.append('status',d.status||'');
+    p.append('language',d.lang||'');
+    p.append('username',d.username||'');
+    p.append('broker',d.broker||'');
+    p.append('deposit',d.deposit||'');
+    p.append('source','Tabieta Effect Onboarding');
+    fetch(GHL_WEBHOOK,{method:'POST',mode:'no-cors',keepalive:true,body:p});
   }catch(e){}
 }
 function uuid(){return'lead_'+Date.now()+'_'+Math.random().toString(36).slice(2,9)}
